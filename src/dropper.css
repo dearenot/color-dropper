@@ -1,0 +1,74 @@
+:root {
+  --chunk-size: 8;
+
+  --pixel-size: 20px;
+
+  --circle-wrapper-size: calc(var(--chunk-size) * var(--pixel-size));
+  --circle-wrapper-border-radius: calc(var(--circle-wrapper-size) / 2);
+
+  --colored-circle-size: calc(var(--circle-wrapper-size) - 8px);
+  --colored-circle-border-radius: calc(var(--colored-circle-size) / 2);
+
+  --pixels-wrapper-size: calc(var(--colored-circle-size) - 8px);
+  --pixels-wrapper-border-radius: calc(var(--pixels-wrapper-size) / 2);
+
+  --dropper-wrapper-size: var(--circle-wrapper-size);
+}
+
+.circleWrapper {
+  width: var(--circle-wrapper-size);
+  height: var(--circle-wrapper-size);
+  border-radius: var(--circle-wrapper-border-radius);
+  background-color: white;
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translate(-50%, -50%);
+}
+
+.coloredCircle {
+  width: var(--colored-circle-size);
+  height: var(--colored-circle-size);
+  border-radius: var(--colored-circle-border-radius);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: red;
+}
+
+.pixelsWrapper {
+  width: var(--pixels-wrapper-size);
+  height: var(--pixels-wrapper-size);
+  border-radius: var(--pixels-wrapper-border-radius);
+  overflow: hidden;
+  background-color: gray;
+}
+
+.dropperWrapper {
+  width: var(--dropper-wrapper-size);
+  height: var(--dropper-wrapper-size);
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+}
+
+.dropperPixelContainer {
+  width: var(--pixel-size);
+  height: var(--pixel-size);
+  display: inline-block;
+  margin: 0.5px;
+  cursor: pointer;
+}
+
+.colorPad {
+  background-color: gray;
+  width: 80px;
+  height: 24px;
+  border-radius: 16px;
+  position: absolute;
+  z-index: 11;
+  bottom: -32px;
+}
