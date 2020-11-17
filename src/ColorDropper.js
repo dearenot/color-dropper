@@ -1,31 +1,49 @@
 import React, { useCallback, useState } from "react";
 import dropperStyle from "./dropper.css";
-
-const PIXEL_SIZE = 4;
-
-function hexFrom(arr) {
-  const result = [];
-  for (let i = 0; i < arr.length - PIXEL_SIZE + 1; i += PIXEL_SIZE) {
-    result.push(`rgba(${arr[i]},${arr[i + 1]},${arr[i + 2]},${arr[i + 3]})`);
-  }
-
-  return result;
-}
+import { getRGBAfromImageData } from "./utils/imageDataToRGBA";
+import { RGBToHex } from "./utils/rgbaToHex";
 
 const ColorPad = ({ color }) => {
-  return <div className={dropperStyle.colorPad}>{color}</div>;
+  return (
+    <div className={dropperStyle.colorPad}>
+      <span className={dropperStyle.colorTextWrapper}>
+        {color && RGBToHex(color).toUpperCase()}
+      </span>
+    </div>
+  );
 };
 
-const ColorDropper = ({ imageData, position }) => {
-  const rgbColor = hexFrom(imageData);
+const ColorPixels = ({ imageData, handleHover }) => {
+  const rgbColor = getRGBAfromImageData(imageData);
 
-  const [hoveredColor, setHoveredColor] = useState(null);
+  return (
+    <div className={dropperStyle.pixelsWrapper}>
+      <div className={dropperStyle.dropperWrapper} onMouseOver={handleHover}>
+        {rgbColor.map((color, i) => (
+          <div
+            data-color={color}
+            className={dropperStyle.dropperPixelContainer}
+            key={`${color}_${i}`}
+            style={{
+              backgroundColor: color,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const MemoizedColorPixels = React.memo(ColorPixels);
+
+const ColorDropper = ({ imageData, position }) => {
+  const [hoveredColor, setHoveredColor] = useState("");
 
   const handleHover = useCallback((e) => {
     const color = e.target.dataset.color;
-    // setHoveredColor(color);
+    setHoveredColor(color);
   }, []);
-  console.log("rend");
+
   const { x, y } = position;
 
   return (
@@ -35,24 +53,12 @@ const ColorDropper = ({ imageData, position }) => {
       style={{ top: y, left: x }}
     >
       <ColorPad color={hoveredColor} />
-      <div id="colored_circle" className={dropperStyle.coloredCircle}>
-        <div className={dropperStyle.pixelsWrapper}>
-          <div
-            className={dropperStyle.dropperWrapper}
-            onMouseOver={handleHover}
-          >
-            {rgbColor.map((color, i) => (
-              <div
-                data-color={color}
-                className={dropperStyle.dropperPixelContainer}
-                key={`${color}_${i}`}
-                style={{
-                  backgroundColor: color,
-                }}
-              />
-            ))}
-          </div>
-        </div>
+      <div
+        id="colored_circle"
+        className={dropperStyle.coloredCircle}
+        style={{ backgroundColor: hoveredColor }}
+      >
+        <MemoizedColorPixels imageData={imageData} handleHover={handleHover} />
       </div>
     </div>
   );

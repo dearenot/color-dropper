@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import img from "./autumn.jpg";
 import ColorDropper from "./ColorDropper";
 
@@ -17,29 +17,36 @@ const App = () => {
     setCanvas(current);
     setCanvasContext(context);
 
-    const base_image = new Image();
-    base_image.src = img;
+    const canvasImage = new Image();
+    canvasImage.src = img;
 
-    base_image.onload = function () {
-      const { width, height } = base_image;
+    canvasImage.addEventListener("load", () => {
+      const { width, height } = canvasImage;
       current.width = width;
       current.height = height;
-      context.drawImage(base_image, 0, 0);
-    };
+      context.drawImage(canvasImage, 0, 0);
+    });
+
+    return () => canvasImage.removeEventListener("load");
   }, []);
 
-  const handleCanvasClick = (e) => {
-    const rect = canvas.getBoundingClientRect();
-    let x = e.clientX - rect.left;
-    let y = e.clientY - rect.top;
+  const handleCanvasClick = useCallback(
+    (e) => {
+      const rect = canvas.getBoundingClientRect();
+      let x = e.clientX - rect.left;
+      let y = e.clientY - rect.top;
 
-    setImageData(canvasContext.getImageData(x, y, CHUNK_SIZE, CHUNK_SIZE).data);
-    setPosition({ x, y });
-  };
+      setImageData(
+        canvasContext.getImageData(x, y, CHUNK_SIZE, CHUNK_SIZE).data
+      );
+      setPosition({ x, y });
+    },
+    [canvas, canvasContext]
+  );
 
   return (
     <>
-      <canvas onClick={handleCanvasClick} ref={canvasRef} id="app_canvas" />
+      <canvas onClick={handleCanvasClick} ref={canvasRef} id="app-canvas" />
       {imageData && <ColorDropper imageData={imageData} position={position} />}
     </>
   );
